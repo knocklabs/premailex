@@ -25,7 +25,7 @@ defmodule Premailex.HTMLInlineStyles do
 
   def process(html, css_rule_sets_or_options, options) when is_binary(html) do
     html
-    |> HTMLParser.parse()
+    |> HTMLParser.parse(options)
     |> process(css_rule_sets_or_options, options)
   end
 

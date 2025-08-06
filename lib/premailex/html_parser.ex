@@ -8,7 +8,7 @@ defmodule Premailex.HTMLParser do
   @type html_tree :: tuple() | list()
   @type selector :: binary()
 
-  @callback parse(binary()) :: html_tree()
+  @callback parse(binary(), Keyword.t()) :: html_tree()
   @callback all(html_tree(), selector()) :: [html_tree()]
   @callback filter(html_tree(), selector()) :: [html_tree()]
   @callback to_string(html_tree()) :: binary()
@@ -22,8 +22,8 @@ defmodule Premailex.HTMLParser do
       iex> Premailex.HTMLParser.parse("<html><head></head><body><h1>Title</h1></body></html>")
       {"html", [], [{"head", [], []}, {"body", [], [{"h1", [], ["Title"]}]}]}
   """
-  @spec parse(binary()) :: html_tree()
-  def parse(html), do: parser().parse(html)
+  @spec parse(binary(), Keyword.t()) :: html_tree()
+  def parse(html, options \\ []), do: parser().parse(html, options)
 
   @doc """
   Searches an HTML tree for the selector.
