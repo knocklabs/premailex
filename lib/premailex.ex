@@ -16,7 +16,7 @@ defmodule Premailex do
   """
   @spec to_inline_css(String.t(), Keyword.t()) :: String.t()
   def to_inline_css(html, options \\ []) when is_binary(html) do
-    Premailex.HTMLInlineStyles.process(html, options)
+    Premailex.HTMLInlineStyles.process(html, nil, options)
   end
 
   @doc """
