@@ -32,7 +32,7 @@ if Code.ensure_loaded?(Meeseeks) do
       |> Enum.map(&Meeseeks.tree/1)
     rescue
       e in Meeseeks.Error ->
-        Logger.warning("Meeseeks error: " <> inspect(e))
+        Logger.debug("Meeseeks error: " <> inspect(e))
         []
     end
 
