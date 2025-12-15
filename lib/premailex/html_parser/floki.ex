@@ -10,28 +10,10 @@ defmodule Premailex.HTMLParser.Floki do
     html = retain_inline_whitespace(html)
     args = [html]
 
-    "< 0.24.0"
-    |> floki_version_match?()
-    |> case do
-      true -> apply(Floki, :parse, args)
-      false -> apply(Floki, :parse_document, args)
-    end
-    |> case do
+    case Floki.parse_document(args) do
       {:ok, [html]} -> html
       {:ok, document} -> document
       any -> any
-    end
-  end
-
-  defp floki_version_match?(req) do
-    case :application.get_key(:floki, :vsn) do
-      {:ok, actual} ->
-        actual
-        |> List.to_string()
-        |> Version.match?(req)
-
-      _any ->
-        false
     end
   end
 
