@@ -87,6 +87,39 @@ defp premail(email) do
 end
 ```
 
+## HTTP adapter
+
+Premailex uses Erlang's built-in `:httpc` to fetch external stylesheets by default. Two adapters are included:
+
+| Adapter | Dependency |
+|---|---|
+| `Premailex.HTTPAdapter.Httpc` | none (default) |
+| `Premailex.HTTPAdapter.Req` | [`req`](https://hex.pm/packages/req) |
+
+To use `Req`, add it to your deps:
+
+```elixir
+{:req, "~> 0.5"}
+```
+
+Then set it globally in your config:
+
+```elixir
+config :premailex, http_adapter: Premailex.HTTPAdapter.Req
+```
+
+Or pass it per-call:
+
+```elixir
+Premailex.to_inline_css(html, http_adapter: Premailex.HTTPAdapter.Req)
+```
+
+To pass adapter-specific options (e.g. custom SSL settings for `:httpc`), use a `{module, opts}` tuple:
+
+```elixir
+config :premailex, http_adapter: {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]}
+```
+
 ## HTML parser
 
 By default, premailex uses [`Floki`](https://github.com/philss/floki) to parse HTML, but you can exchange it for any HTML parser you prefer. [`Meeseeks`](https://github.com/mischov/meeseeks) is supported with the [`Premailex.HTMLParser.Meeseeks`](/lib/premailex/html_parser/meeseeks.ex) module. To use it, add the following to `config.exs`:

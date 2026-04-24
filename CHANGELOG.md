@@ -2,10 +2,14 @@
 
 ## Unreleased
 
-Requires Elixir 1.14 or higher.
+Requires Elixir 1.15 or higher.
 
 * Fixed compiler warnings in `Premailex.HTMLParser.Meeseeks`
 * Fixed invalid spec in `Premailex.HTMLInlineStyles.process/3`
+* Introduce optional `Req` adapter
+* Support passing `:http_adapter` option when calling `Premailex.to_inline_css/2`
+  * Supports passing just the adapter, e.g. `Premailex.HTTPAdapter.Req` or an adapter with custom options `{Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]}`
+  * Falls back to default specified via application config if unspecified
 
 ## v0.3.20 (2025-01-20)
 
