@@ -231,7 +231,7 @@ defmodule Premailex.HTMLInlineStyles do
 
     case Keyword.get(options, :http_adapter, default) do
       {adapter, opts} -> {adapter, opts}
-      adapter -> {adapter, nil}
+      adapter -> {adapter, []}
     end
   end
 end
