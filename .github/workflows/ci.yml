@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  push: 
-    branches: [ main ]
+  push:
+    branches: [main]
   pull_request:
   workflow_call:
 
@@ -41,7 +41,7 @@ jobs:
             elixir: 1.19
             os: ubuntu-latest
           - otp: 24.0
-            elixir: 1.14
+            elixir: 1.15
             os: ubuntu-latest
 
     runs-on: ${{ matrix.version.os }}

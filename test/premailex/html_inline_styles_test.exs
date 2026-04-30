@@ -218,6 +218,32 @@ defmodule Premailex.HTMLInlineStylesTest do
     assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
   end
 
+  @tag test_server: false
+  test "process/3 when styles loads on SSL via http_adapter option", %{input: input} do
+    TestServer.start(scheme: :https)
+
+    TestServer.add("/styles.css",
+      to: fn conn -> Plug.Conn.send_resp(conn, 200, @css_link_content) end
+    )
+
+    ssl_opts =
+      [
+        verify: :verify_peer,
+        depth: 99,
+        cacerts: TestServer.x509_suite().cacerts,
+        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: ~c"localhost"}
+      ]
+
+    input = String.replace(input, "http://localhost", TestServer.url())
+
+    assert parsed =
+             Premailex.HTMLInlineStyles.process(input,
+               http_adapter: {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]}
+             )
+
+    assert parsed =~ "<html xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: black;\">"
+  end
+
   test "process/3 with css_selector", %{input: input} do
     parsed =
       Premailex.HTMLInlineStyles.process(input, css_selector: "link[rel=\"stylesheet\"][href]")

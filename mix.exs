@@ -7,7 +7,7 @@ defmodule Premailex.Mixfile do
     [
       app: :premailex,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       xref: [
@@ -17,7 +17,9 @@ defmodule Premailex.Mixfile do
           Meeseeks,
           Meeseeks.Document,
           Meeseeks.Selector.CSS,
-          :ssl_verify_hostname
+          :ssl_verify_hostname,
+          Req,
+          Req.Response
         ]
       ],
 
@@ -43,6 +45,7 @@ defmodule Premailex.Mixfile do
       {:meeseeks, "~> 0.11", optional: true},
       {:certifi, ">= 0.0.0", optional: true},
       {:ssl_verify_fun, ">= 0.0.0", optional: true},
+      {:req, ">= 0.0.0", optional: true},
 
       # Development and test
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},

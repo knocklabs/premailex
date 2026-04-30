@@ -18,6 +18,9 @@ defmodule Premailex.HTMLInlineStyles do
       * `:none` - no optimization (default)
       * `:all` - apply all optimization steps
       * `:remove_style_tags` - Remove style tags (can be combined in a list)
+    * `:http_adapter` - the HTTP adapter module or `{module, opts}` tuple used to fetch linked
+      stylesheets. Defaults to the `:http_adapter` application config, falling back to
+      `Premailex.HTTPAdapter.Httpc`
   """
   @spec process(html_or_html_tree(), css_rule_sets_or_options() | nil, keyword() | nil) ::
           String.t()
@@ -38,7 +41,7 @@ defmodule Premailex.HTMLInlineStyles do
 
   def process(html_tree, nil, options) do
     css_selector = Keyword.get(options, :css_selector, "style,link[rel=\"stylesheet\"][href]")
-    css_rule_sets = load_styles(html_tree, css_selector)
+    css_rule_sets = load_styles(html_tree, css_selector, options)
     options = Keyword.put_new(options, :css_selector, css_selector)
 
     process(html_tree, css_rule_sets, options)
@@ -56,10 +59,10 @@ defmodule Premailex.HTMLInlineStyles do
     |> HTMLParser.to_string()
   end
 
-  defp load_styles(tree, css_selector) do
+  defp load_styles(tree, css_selector, options) do
     tree
     |> HTMLParser.all(css_selector)
-    |> Enum.map(&load_css(&1))
+    |> Enum.map(&load_css(&1, options))
     |> Enum.filter(&(!is_nil(&1)))
     |> Enum.reduce([], &Enum.concat(&1, &2))
   end
@@ -91,16 +94,17 @@ defmodule Premailex.HTMLInlineStyles do
     end)
   end
 
-  defp load_css({"style", _, content}) do
+  defp load_css({"style", _, content}, _options) do
     content
     |> Enum.join("\n")
     |> CSSParser.parse()
   end
 
-  defp load_css({"link", attrs, _}), do: load_css({"link", List.keyfind(attrs, "href", 0)})
+  defp load_css({"link", attrs, _}, options),
+    do: load_css({"link", List.keyfind(attrs, "href", 0)}, options)
 
-  defp load_css({"link", {"href", url}}) do
-    {http_adapter, opts} = http_adapter()
+  defp load_css({"link", {"href", url}}, options) do
+    {http_adapter, opts} = http_adapter(options)
 
     :get
     |> http_adapter.request(url, nil, [], opts)
@@ -222,8 +226,10 @@ defmodule Premailex.HTMLInlineStyles do
     end)
   end
 
-  defp http_adapter do
-    case Application.get_env(:premailex, :http_adapter, Premailex.HTTPAdapter.Httpc) do
+  defp http_adapter(options) do
+    default = Application.get_env(:premailex, :http_adapter, Premailex.HTTPAdapter.Httpc)
+
+    case Keyword.get(options, :http_adapter, default) do
       {adapter, opts} -> {adapter, opts}
       adapter -> {adapter, nil}
     end
