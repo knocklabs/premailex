@@ -8,9 +8,8 @@ defmodule Premailex.HTMLParser.Floki do
   @doc false
   def parse(html) do
     html = retain_inline_whitespace(html)
-    args = [html]
 
-    case Floki.parse_document(args) do
+    case Floki.parse_document(html) do
       {:ok, [html]} -> html
       {:ok, document} -> document
       any -> any
