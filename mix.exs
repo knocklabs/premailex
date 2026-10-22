@@ -12,12 +12,10 @@ defmodule Premailex.Mixfile do
       deps: deps(),
       xref: [
         exclude: [
-          :certifi,
           :httpc,
           Meeseeks,
           Meeseeks.Document,
           Meeseeks.Selector.CSS,
-          :ssl_verify_hostname,
           Req,
           Req.Response
         ]
@@ -43,8 +41,6 @@ defmodule Premailex.Mixfile do
     [
       {:floki, "~> 0.19"},
       {:meeseeks, "~> 0.11", optional: true},
-      {:certifi, ">= 0.0.0", optional: true},
-      {:ssl_verify_fun, ">= 0.0.0", optional: true},
       {:req, ">= 0.0.0", optional: true},
 
       # Development and test
