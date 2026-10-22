@@ -207,8 +207,7 @@ defmodule Premailex.HTMLInlineStylesTest do
       [
         verify: :verify_peer,
         depth: 99,
-        cacerts: TestServer.x509_suite().cacerts,
-        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: ~c"localhost"}
+        cacerts: TestServer.x509_suite().cacerts
       ]
 
     Application.put_env(:premailex, :http_adapter, {Premailex.HTTPAdapter.Httpc, [ssl: ssl_opts]})
@@ -230,8 +229,7 @@ defmodule Premailex.HTMLInlineStylesTest do
       [
         verify: :verify_peer,
         depth: 99,
-        cacerts: TestServer.x509_suite().cacerts,
-        verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: ~c"localhost"}
+        cacerts: TestServer.x509_suite().cacerts
       ]
 
     input = String.replace(input, "http://localhost", TestServer.url())

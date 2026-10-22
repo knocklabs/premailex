@@ -40,7 +40,7 @@ jobs:
           - otp: 28.0
             elixir: 1.19
             os: ubuntu-latest
-          - otp: 24.0
+          - otp: 25.0
             elixir: 1.15
             os: ubuntu-latest
 

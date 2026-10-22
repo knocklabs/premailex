@@ -2,8 +2,8 @@ defmodule Premailex.HTTPAdapter.Httpc do
   @moduledoc """
   HTTP adapter module for making http requests with httpc.
 
-  SSL support will automatically be enabled if the `:certifi` and
-  `:ssl_verify_fun` libraries exists in your project.
+  By default, SSL requests verify the server certificate against the OS
+  certificate store loaded by `:public_key.cacerts_get/0`.
   """
   alias Premailex.{HTTPAdapter, HTTPAdapter.HTTPResponse}
 
@@ -15,7 +15,7 @@ defmodule Premailex.HTTPAdapter.Httpc do
     request = httpc_request(url, body, headers)
 
     method
-    |> :httpc.request(request, parse_httpc_opts(httpc_opts, url), [])
+    |> :httpc.request(request, parse_httpc_opts(httpc_opts), [])
     |> format_response()
   end
 
@@ -57,38 +57,17 @@ defmodule Premailex.HTTPAdapter.Httpc do
 
   defp format_response({:error, error}), do: {:error, error}
 
-  defp parse_httpc_opts(nil, url), do: default_httpc_opts(url)
-  defp parse_httpc_opts(opts, _url), do: opts
+  defp parse_httpc_opts(nil), do: [ssl: default_ssl_opts()]
+  defp parse_httpc_opts(opts), do: opts
 
-  defp default_httpc_opts(url) do
-    case certifi_and_ssl_verify_fun_available?() do
-      true -> [ssl: ssl_opts(url)]
-      false -> []
-    end
-  end
-
-  defp certifi_and_ssl_verify_fun_available? do
-    Application.ensure_all_started(:certifi)
-    Application.ensure_all_started(:ssl_verify_fun)
-
-    app_available?(:certifi) && app_available?(:ssl_verify_fun)
-  end
-
-  defp app_available?(app) do
-    case :application.get_key(app, :vsn) do
-      {:ok, _vsn} -> true
-      _ -> false
-    end
-  end
-
-  defp ssl_opts(url) do
-    %{host: host} = URI.parse(url)
-
+  defp default_ssl_opts do
     [
       verify: :verify_peer,
       depth: 99,
-      cacerts: :certifi.cacerts(),
-      verify_fun: {&:ssl_verify_hostname.verify_fun/3, check_hostname: to_charlist(host)}
+      cacerts: :public_key.cacerts_get(),
+      customize_hostname_check: [
+        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+      ]
     ]
   end
 end

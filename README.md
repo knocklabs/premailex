@@ -17,10 +17,6 @@ def deps do
   [
     # ...
     {:premailex, "~> 0.3.20"},
-
-    # Optional, but recommended for SSL validation with :httpc
-    {:certifi, "~> 2.4"},
-    {:ssl_verify_fun, "~> 1.1"},
     # ...
   ]
 end
